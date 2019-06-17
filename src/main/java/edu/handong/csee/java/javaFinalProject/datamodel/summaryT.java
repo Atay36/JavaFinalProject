@@ -2,6 +2,15 @@ package edu.handong.csee.java.javaFinalProject.datamodel;
 
 public class summaryT<T> {
 	
+	private T studentId;
+	private T title;
+	private T summarys;
+	private T keyword;
+	private T date;
+	private T link;
+	private T sourse;
+	private T copyRight;
+	
 	public summaryT(T studentId) { // constructor
 
 		this.setStudentId(studentId);
@@ -16,7 +25,6 @@ public class summaryT<T> {
 				+ "]";
 	}
 
-	private T studentId;
 	public T getStudentId() {
 		return studentId;
 	}
@@ -80,14 +88,6 @@ public class summaryT<T> {
 	public void setCopyRight(T copyRight) {
 		this.copyRight = copyRight;
 	}
-
-	private T title;
-	private T summarys;
-	private T keyword;
-	private T date;
-	private T link;
-	private T sourse;
-	private T copyRight;
 
 	
 

@@ -49,7 +49,7 @@ public class ExcelReader {
 		return values;
 	}
 
-	public ArrayList<summaryT<String>> getSummaryData(InputStream is) {
+	public ArrayList<summaryT<String>> getSummaryData(InputStream is,String name) {
 		ArrayList<summaryT<String>> sum = new ArrayList<summaryT<String>>();
 
 		try (InputStream inp = is) {
@@ -58,9 +58,10 @@ public class ExcelReader {
 			XSSFSheet sheet = wb.getSheetAt(0);
 
 			int rows = sheet.getPhysicalNumberOfRows();
+			String id = name;//.split(".")[0];
 
 			for (int a = 1; a < rows; a++) {
-				summaryT<String> sm = new summaryT<String>("0001");
+				summaryT<String> sm = new summaryT<String>(id);
 				// sm.setTitle();
 				if (sheet.getRow(a) == null)
 					break;
@@ -79,16 +80,16 @@ public class ExcelReader {
 				XSSFCell cell5 = row.getCell(5);
 				XSSFCell cell6 = row.getCell(6);
 
-				if (row.getCell(5) == null)
-					break;
+//				if (row.getCell(5) == null)
+//					break;
 
-				sm.setTitle(cell0.getStringCellValue());
-				sm.setSummarys(cell1.getStringCellValue());
-				sm.setKeyword(cell2.getStringCellValue());
-				sm.setDate(cell3.getStringCellValue());
-				sm.setLink(cell4.getStringCellValue());
-				sm.setSourse(cell5.getStringCellValue());
-				sm.setCopyRight(cell6.getStringCellValue());
+				sm.setTitle((String.valueOf(row.getCell(0))));
+				sm.setSummarys((String.valueOf(row.getCell(1))));
+				sm.setKeyword((String.valueOf(row.getCell(2))));
+				sm.setDate((String.valueOf(row.getCell(3))));
+				sm.setLink((String.valueOf(row.getCell(4))));
+				sm.setSourse((String.valueOf(row.getCell(5))));
+				sm.setCopyRight((String.valueOf(row.getCell(6))));
 
 				// System.out.println(">>> getSummaryData sm [" + a + "] " + sm.toString());
 
@@ -114,7 +115,7 @@ public class ExcelReader {
 		return sum;
 	}
 
-	public ArrayList<graphT<String>> getGraphData(InputStream is) {
+	public ArrayList<graphT<String>> getGraphData(InputStream is,String name) {
 		ArrayList<graphT<String>> grp = new ArrayList<graphT<String>>();
 
 		try (InputStream inp = is) {
@@ -122,21 +123,21 @@ public class ExcelReader {
 			XSSFSheet sheet = wb.getSheetAt(0);
 
 			int rows = sheet.getPhysicalNumberOfRows();
-			System.out.println("--------------------------");
-
+			System.out.println("--------------------------rows : "+rows);
+			String id = name;//.split(".")[0];
 			for (int a = 2; a < rows; a++) {
 
-				graphT<String> gr = new graphT<String>("0001");
-				;
+				graphT<String> gr = new graphT<String>(id);
+				
 
-				if (sheet.getRow(a) == null)
-					break;
+//				if (sheet.getRow(a) == null)
+//					break;
 
 				XSSFRow row = sheet.getRow(a);
 
 				if (row.getCell(0) == null || row.getCell(1) == null || row.getCell(2) == null || row.getCell(3) == null
-						|| row.getCell(4) == null)
-					break;
+						|| row.getCell(4) == null)	continue;
+
 
 				XSSFCell cell0 = row.getCell(0);
 				XSSFCell cell1 = row.getCell(1);
@@ -144,11 +145,12 @@ public class ExcelReader {
 				XSSFCell cell3 = row.getCell(3);
 				XSSFCell cell4 = row.getCell(4);
 
-				gr.setTitle(cell0.getStringCellValue());
-				gr.setNumber(cell1.getStringCellValue());
-				gr.setType(cell2.getStringCellValue());
-				gr.setComment(cell3.getStringCellValue());
-				gr.setPage(cell4.getStringCellValue());
+				gr.setTitle((String.valueOf(row.getCell(0))));
+				gr.setNumber((String.valueOf(row.getCell(1))));
+				gr.setType((String.valueOf(row.getCell(2))));
+				gr.setComment((String.valueOf(row.getCell(3))));
+				//gr.setPage(cell4.getStringCellValue());
+				gr.setPage((String.valueOf(row.getCell(4))));
 
 				/*
 				 * System.out.println("cell0 : "+ gr.getTitle()); System.out.println("cell1 : "+
@@ -171,10 +173,10 @@ public class ExcelReader {
 			e.printStackTrace();
 		}
 
-		System.out.println("==== getSummaryData sum :: " + grp.size());
+		System.out.println("==== getGraphData grp :: " + grp.size());
 
 		for (int i = 0; i < grp.size(); i++) {
-			System.out.println("==== getSummaryData [" + i + "]" + grp.get(i).toString());
+			System.out.println("==== getGraphData [" + i + "]" + grp.get(i).toString());
 
 		}
 		return grp;

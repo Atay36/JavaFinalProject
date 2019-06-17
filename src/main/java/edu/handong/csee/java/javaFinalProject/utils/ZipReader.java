@@ -23,11 +23,11 @@ public class ZipReader {
 	private void run(String[] dataPath) {
 		//String path = dataPath[0];
 		
-		readFileInZip("/Users/yeeunlee/git/JavaFinalProject/0001.zip");
+		readFileInZip("/Users/yeeunlee/git/JavaFinalProject/0001.zip","");
 		
 	}
 
-	public void readFileInZip(String path) {
+	public void readFileInZip(String path,String name) {
 		ZipFile zipFile;
 		ArrayList<summaryT<String>> summarys = new ArrayList<summaryT<String>>();
 		ArrayList<graphT<String>> graphs = new ArrayList<graphT<String>>();
@@ -47,7 +47,7 @@ public class ZipReader {
 		        ExcelReader myReader2 = new ExcelReader();
 
 		        
-		        summarys = myReader1.getSummaryData(stream1);
+		        summarys = myReader1.getSummaryData(stream1,name);
 		        //System.out.println(">>"+summarys.);
 		        
 		        //for(summary value : summarys) {
@@ -57,7 +57,7 @@ public class ZipReader {
 
 		        //}
 		        
-		        graphs = myReader2.getGraphData(stream2);
+		        graphs = myReader2.getGraphData(stream2,name);
 		        //System.out.println(">>"+summarys.);
 		        
 		        for(graphT<String> value : graphs) {

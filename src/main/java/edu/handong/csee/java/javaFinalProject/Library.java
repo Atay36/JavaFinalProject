@@ -3,6 +3,7 @@
  */
 package edu.handong.csee.java.javaFinalProject;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
@@ -52,28 +53,76 @@ public class Library {
 		String dataPath = input; // csv file to be analyzed
 		String resultPath = output; // the file path where the results are saved.
 
+		ArrayList<String> fileNames = new ArrayList<String>();
+		ArrayList<String> dataPaths = new ArrayList<String>();
+
+		File file = new File(dataPath);
+
+		// 1. check if the file exists or not
+		boolean isExists = file.exists();
+
+		if (!isExists) {
+			System.out.println("There is nothing.");
+		}
+
+		// 2. check if the object is directory or not.
+		if (file.isDirectory()) {
+			File[] fileList = file.listFiles();
+			for (File tFile : fileList) {
+				// System.out.print(tFile.getName());
+				fileNames.add(tFile.getName());
+				dataPaths.add(dataPath + "/" + tFile.getName());
+
+			}
+		} else {
+			System.out.println("It is not a directory.");
+		}
+		System.out.println("dataPaths : " + dataPaths);
+
 		System.out.println("summarys ------------------------------------- S");
-		ArrayList<summaryT<String>> summarys = Utils.ZipReaderSummary(dataPath);
-		ArrayList<graphT<String>> graphs = Utils.ZipReaderGraph(dataPath);
-		System.out.println("summarys ------------------------------------- E");
-		if (summarys == null) {
-			System.out.println("summarys is null");
-		} else {
-			for (int i = 0; i < summarys.size(); i++) {
-				System.out.println("====>>>> [" + i + "]" + summarys.get(i).toString());
-
+		ArrayList<summaryT<String>> totalSummarys = new ArrayList<summaryT<String>>();
+		ArrayList<graphT<String>> totalGraphs = new ArrayList<graphT<String>>();
+		int i = 0;
+		for (String name : fileNames) {
+			String path = dataPath + "/" + name;
+			if (path.contains("DS_Store"))
+				continue;
+			ArrayList<summaryT<String>> summarys = Utils.ZipReaderSummary(path, name);
+			ArrayList<graphT<String>> graphs = Utils.ZipReaderGraph(path, name);
+			i=0;
+			for (summaryT<String> num : summarys) {
+				totalSummarys.add(summarys.get(i));
+				i++;
+			}
+			i=0;
+			for (graphT<String> num : graphs) {
+				totalGraphs.add(graphs.get(i));
+				i++;
 			}
 		}
 
-		if (graphs == null) {
-			System.out.println("graphs is null");
-		} else {
-			for (int i = 0; i < graphs.size(); i++) {
-				System.out.println("====>>>> [" + i + "]" + graphs.get(i).toString());
-
-			}
-		}
-		// System.out.println("graphs : "+graphs.get(0));
+		// ArrayList<summaryT<String>> summarys = Utils.ZipReaderSummary(dataPath);
+		// ArrayList<graphT<String>> graphs = Utils.ZipReaderGraph(dataPath);
+//		System.out.println("summarys ------------------------------------- E");
+//		if (summarys == null) {
+//			System.out.println("summarys is null");
+//		} else {
+//			for (int i = 0; i < summarys.size(); i++) {
+//				System.out.println("====>>>> [" + i + "]" + summarys.get(i).toString());
+//
+//			}
+//		}
+//
+//		if (graphs == null) {
+//			System.out.println("graphs is null");
+//		} else {
+//			for (int i = 0; i < graphs.size(); i++) {
+//				System.out.println("====>>>> [" + i + "]" + graphs.get(i).toString());
+//
+//			}
+//		}
+		Utils.writeexcelSummary(totalSummarys);
+		Utils.writeexcelGraph(totalGraphs);
 
 	}
 
