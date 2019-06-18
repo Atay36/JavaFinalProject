@@ -24,9 +24,6 @@ public class Library implements Runnable {
 	String output;
 	boolean help;
 
-	public boolean someLibraryMethod() {
-		return true;
-	}
 
 	public void run(String[] args) throws MyException {
 

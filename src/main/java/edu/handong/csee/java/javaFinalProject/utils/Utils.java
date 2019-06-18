@@ -134,40 +134,7 @@ public class Utils {
 		}
 	}
 
-	public static void writeError(ArrayList<String> list, String path) {
-
-		try {
-			File file = new File(path);
-			FileOutputStream fileout = new FileOutputStream(file);
-
-			XSSFWorkbook hworkbook = new XSSFWorkbook();
-			XSSFSheet sheet = hworkbook.createSheet("theaterList"); // sheet 생성
-
-			XSSFRow curRow;
-
-			curRow = sheet.createRow(0); // row 생성
-			curRow.createCell(0).setCellValue("Error 파일"); // row에 각 cell에 저장
-			//curRow.createCell(1).setCellValue("Error 파일");
-			
-			System.out.println("errors : " + list);
-			int i=1;
-			for (String num : list) {
-				curRow = sheet.createRow(i + 1); // row 생성
-				curRow.createCell(0).setCellValue(num); // row에 각 cell에 저장
-				//curRow.createCell(1).setCellValue(num);
-				i++;
-			}
-			hworkbook.write(fileout); // 파일 쓰기
-			hworkbook.close();
-			fileout.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-	}
-
+	
 	public static void writeexcelGraph(ArrayList<GraphT<String>> list, String resultPath) {
 
 		String path = "";
@@ -213,4 +180,39 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void writeError(ArrayList<String> list, String path) {
+
+		try {
+			File file = new File(path);
+			FileOutputStream fileout = new FileOutputStream(file);
+
+			XSSFWorkbook hworkbook = new XSSFWorkbook();
+			XSSFSheet sheet = hworkbook.createSheet("theaterList"); // sheet 생성
+
+			XSSFRow curRow;
+
+			curRow = sheet.createRow(0); // row 생성
+			curRow.createCell(0).setCellValue("Error 파일"); // row에 각 cell에 저장
+			//curRow.createCell(1).setCellValue("Error 파일");
+			
+			System.out.println("errors : " + list);
+			int i=1;
+			for (String num : list) {
+				curRow = sheet.createRow(i + 1); // row 생성
+				curRow.createCell(0).setCellValue(num); // row에 각 cell에 저장
+				//curRow.createCell(1).setCellValue(num);
+				i++;
+			}
+			hworkbook.write(fileout); // 파일 쓰기
+			hworkbook.close();
+			fileout.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 }
