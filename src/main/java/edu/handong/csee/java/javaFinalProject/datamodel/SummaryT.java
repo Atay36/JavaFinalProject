@@ -1,6 +1,6 @@
 package edu.handong.csee.java.javaFinalProject.datamodel;
 
-public class summaryT<T> {
+public class SummaryT<T> {
 	
 	private T studentId;
 	private T title;
@@ -11,7 +11,7 @@ public class summaryT<T> {
 	private T sourse;
 	private T copyRight;
 	
-	public summaryT(T studentId) { // constructor
+	public SummaryT(T studentId) { // constructor
 
 		this.setStudentId(studentId);
 		// coursesTaken = new ArrayList<Course>();

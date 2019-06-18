@@ -13,11 +13,12 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import edu.handong.csee.java.javaFinalProject.datamodel.graphT;
-import edu.handong.csee.java.javaFinalProject.datamodel.summaryT;
+import edu.handong.csee.java.javaFinalProject.datamodel.GraphT;
+import edu.handong.csee.java.javaFinalProject.datamodel.SummaryT;
+import edu.handong.csee.java.javaFinalProject.utils.MyException;
 import edu.handong.csee.java.javaFinalProject.utils.Utils;;
 
-public class Library {
+public class Library implements Runnable {
 
 	String input;
 	String output;
@@ -27,7 +28,7 @@ public class Library {
 		return true;
 	}
 
-	public void run(String[] args) {
+	public void run(String[] args) throws MyException {
 
 		Options option = createOptions();
 		if (parseOptions(option, args)) {
@@ -54,75 +55,122 @@ public class Library {
 		String resultPath = output; // the file path where the results are saved.
 
 		ArrayList<String> fileNames = new ArrayList<String>();
-		ArrayList<String> dataPaths = new ArrayList<String>();
 
 		File file = new File(dataPath);
-
-		// 1. check if the file exists or not
 		boolean isExists = file.exists();
 
 		if (!isExists) {
 			System.out.println("There is nothing.");
+			return;
 		}
-
-		// 2. check if the object is directory or not.
 		if (file.isDirectory()) {
 			File[] fileList = file.listFiles();
 			for (File tFile : fileList) {
 				// System.out.print(tFile.getName());
+				if(!tFile.getName().contains(".zip")) continue;
 				fileNames.add(tFile.getName());
-				dataPaths.add(dataPath + "/" + tFile.getName());
 
 			}
 		} else {
 			System.out.println("It is not a directory.");
-		}
-		System.out.println("dataPaths : " + dataPaths);
+			return;
+		} 
+		if(fileNames.size()<1) {
+			System.out.println("file not found");
+			return;
+		} else {
+			System.out.println("file count : " + fileNames.size());
 
-		System.out.println("summarys ------------------------------------- S");
-		ArrayList<summaryT<String>> totalSummarys = new ArrayList<summaryT<String>>();
-		ArrayList<graphT<String>> totalGraphs = new ArrayList<graphT<String>>();
-		int i = 0;
-		for (String name : fileNames) {
-			String path = dataPath + "/" + name;
-			if (path.contains("DS_Store"))
-				continue;
-			ArrayList<summaryT<String>> summarys = Utils.ZipReaderSummary(path, name);
-			ArrayList<graphT<String>> graphs = Utils.ZipReaderGraph(path, name);
-			i=0;
-			for (summaryT<String> num : summarys) {
-				totalSummarys.add(summarys.get(i));
-				i++;
-			}
-			i=0;
-			for (graphT<String> num : graphs) {
-				totalGraphs.add(graphs.get(i));
-				i++;
-			}
 		}
+		
+		ExcelUtil util = new ExcelUtil(dataPath, resultPath, fileNames, "summary");
+		Thread t1 = new Thread(util,"summary Thread");
+		t1.start();
+		
+		util = new ExcelUtil(dataPath, resultPath, fileNames, "graph");
+		Thread t2 = new Thread(util,"graph Thread");
+		t2.start();
 
-		// ArrayList<summaryT<String>> summarys = Utils.ZipReaderSummary(dataPath);
-		// ArrayList<graphT<String>> graphs = Utils.ZipReaderGraph(dataPath);
-//		System.out.println("summarys ------------------------------------- E");
-//		if (summarys == null) {
-//			System.out.println("summarys is null");
-//		} else {
-//			for (int i = 0; i < summarys.size(); i++) {
-//				System.out.println("====>>>> [" + i + "]" + summarys.get(i).toString());
-//
-//			}
-//		}
-//
-//		if (graphs == null) {
-//			System.out.println("graphs is null");
-//		} else {
-//			for (int i = 0; i < graphs.size(); i++) {
-//				System.out.println("====>>>> [" + i + "]" + graphs.get(i).toString());
-//
-//			}
-//		}
-		Utils.writeexcelSummary(totalSummarys);
-		Utils.writeexcelGraph(totalGraphs);
+		
+	}
+	
+	public class ExcelUtil extends Thread {
+		private String dataPath;
+		private String resultPath;
+		
+		private ArrayList<String> fileNames;
+		private String dataType;
+		
+		public ExcelUtil(String dataPath, String resultPath, ArrayList<String> fileNames, String dataType ){
+			this.dataPath = dataPath;
+			this.resultPath = resultPath;
+			this.fileNames = fileNames;
+			this.dataType = dataType;
+			
+		}
+		
+		public void run() {
+
+			System.out.println(dataType+" ------------------------------------- S");
+
+			if( dataType.equals("summary")) {
+				
+				ArrayList<SummaryT<String>> totalLists = new ArrayList<SummaryT<String>>();
+				ArrayList<String> errorList = new ArrayList<String>();
+
+				for (int i = 0; i < fileNames.size(); i++) {
+					String name = fileNames.get(i);
+					String path = dataPath + "/" + name;
+					System.out.println(">>> path : " + path);
+					
+					ArrayList<SummaryT<String>> list;
+					try {
+						list = Utils.ZipReaderSummary(path, name.replace(".zip", ""));
+						if (list.size() > 0) {
+							totalLists.addAll(list);
+						} else {
+							errorList.add(name);
+						}
+					} catch (Exception e) {
+						System.out.println("==== ExcelUtil summary Exception : " + e.toString());
+					}
+				}
+
+				System.out.println(">>> totalLists : " + totalLists.size());
+				Utils.writeexcelSummary(totalLists, resultPath);
+				Utils.writeError(errorList, "Error1.csv" );
+					
+			} else if (dataType.equals("graph")){
+
+				ArrayList<GraphT<String>> totalLists = new ArrayList<GraphT<String>>();
+				ArrayList<String> errorList = new ArrayList<String>();
+
+				for (int i = 0; i < fileNames.size(); i++) {
+					String name = fileNames.get(i);
+					String path = dataPath + "/" + name;
+					System.out.println(">>> path : " + path);
+
+					ArrayList<GraphT<String>> list;
+					try {
+						list = Utils.ZipReaderGraph(path, name.replace(".zip", ""));
+						if (list.size() > 0) {
+							totalLists.addAll(list);
+						} else {
+							errorList.add(name);
+						}
+					} catch (Exception e) {
+						System.out.println("==== ExcelUtil graph Exception : " + e.toString());
+					}
+				}
+				
+				System.out.println(">>> totalLists : " + totalLists.size());
+				Utils.writeexcelGraph(totalLists, resultPath);
+				Utils.writeError(errorList, "Error2.csv" );
+
+			}
+
+			System.out.println(dataType+" ------------------------------------- E");
+		} // run
 
 	}
 
@@ -167,6 +215,12 @@ public class Library {
 		String header = "HGU Course Analyzer";
 		String footer = "";
 		formatter.printHelp("HGUCourseCounter", header, options, footer, true);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

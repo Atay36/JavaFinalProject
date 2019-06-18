@@ -1,12 +1,14 @@
 package edu.handong.csee.java.javaFinalProject.datamodel;
 
-public class graphT<T> {
+public class GraphT<T> {
 
 	private T studentId;
 	private T number;
 	private T type;
 	private T comment;
 	private T page;
+	private T title;
+
 
 	public void setStudentId(T studentId) {
 		this.studentId = studentId;
@@ -32,7 +34,6 @@ public class graphT<T> {
 		this.page = page;
 	}
 
-	private T title;
 
 	public T getStudentId() {
 		return studentId;
@@ -58,7 +59,7 @@ public class graphT<T> {
 		return page;
 	}
 
-	public graphT(T studentId) { // constructor
+	public GraphT(T studentId) { // constructor
 
 		this.setStudentId(studentId);
 		// coursesTaken = new ArrayList<Course>();
